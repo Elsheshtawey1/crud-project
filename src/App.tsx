@@ -7,8 +7,8 @@ import Input from "./components/Ui/Input";
 import { IProduct } from "./interfaces";
 
 function App() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [product, setProduct] = useState<IProduct>({
+  // Default empty product object to reset form
+  const defaultProductObj: IProduct = {
     title: "",
     description: "",
     imageURL: "",
@@ -18,11 +18,29 @@ function App() {
       name: "",
       imageURL: "",
     },
-  });
+  };
+
+  // State to handle modal visibility
+  const [isOpen, setIsOpen] = useState(false);
+
+  // State to handle product form data
+  const [product, setProduct] = useState<IProduct>(defaultProductObj);
+
+  // Input change handler: updates product state when typing in form
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
   };
+
+  // Form submit handler: prevents page refresh and logs product data
+  const submitHandler = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    console.log(product);
+  };
+
+  // Render product list (cards)
   const renderProductList = productList.map((product) => <ProductCart key={product.id} product={product} />);
+
+  // Render form inputs from data
   const renderformInputsList = formInputsList.map((input) => (
     <div className="flex flex-col" key={input.id}>
       <label htmlFor={input.id} className="mb-[2px] text-sm font-medium text-gray-700">
@@ -31,22 +49,43 @@ function App() {
       <Input type="text" id={input.id} name={input.name} value={product[input.name as "title" | "description" | "imageURL" | "price"]} onChange={onChangeHandler} />
     </div>
   ));
+
   return (
     <main className="container mx-auto bg-blue-200">
+      {/* Open modal button */}
       <button onClick={() => setIsOpen(true)} className="m-5 rounded-lg bg-blue-600 px-4 py-2 text-white">
         build now
       </button>
 
+      {/* Modal for adding a new product */}
       <Model isOpen={isOpen} onClose={() => setIsOpen(false)} title="Add New Product">
-        <div className="space-y-3">{renderformInputsList}</div>
-        <div className="flex items-center justify-between space-x-3 mt-5">
-          <button className="bg-red-700 w-full p-2 rounded-lg text-white cursor-pointer ">Submit</button>
-          <Button onClick={() => setIsOpen(false)} className="bg-indigo-700 w-full p-2 rounded-lg text-white cursor-pointer ">
-            Close
-          </Button>
-        </div>
+        <form onSubmit={submitHandler} className="space-y-3">
+          {/* Dynamic form inputs */}
+          {renderformInputsList}
+
+          {/* Submit & Close buttons */}
+          <div className="flex items-center justify-between space-x-3 mt-5">
+            {/* Submit button: logs product data */}
+            <Button type="submit" className="bg-red-700 w-full p-2 rounded-lg text-white cursor-pointer ">
+              Submit
+            </Button>
+
+            {/* Close button: resets form and closes modal */}
+            <Button
+              type="button"
+              onClick={() => {
+                setProduct(defaultProductObj); // reset form
+                setIsOpen(false); // close modal
+              }}
+              className="bg-indigo-700 w-full p-2 rounded-lg text-white cursor-pointer "
+            >
+              Close
+            </Button>
+          </div>
+        </form>
       </Model>
 
+      {/* Grid for displaying product cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 m-5 p-5 rounded-md">{renderProductList}</div>
     </main>
   );
