@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { v4 as uuid } from "uuid";
+
 import ProductCart from "./components/ProductCart";
 import Model from "./components/Ui/Model";
 import { colors, formInputsList, productList } from "./data";
@@ -25,10 +27,14 @@ function App() {
 
   // State to handle modal visibility
   const [isOpen, setIsOpen] = useState(false);
+  // State to handle selected colors
   const [tampColor, setTampColor] = useState<string[]>([]);
   console.log(tampColor);
   // State to handle product form data
   const [product, setProduct] = useState<IProduct>(defaultProductObj);
+  const [products, setProducts] = useState<IProduct[]>(productList);
+
+  // State to handle form validation errors
   const [error, setError] = useState({ title: "", description: "", imageURL: "", price: "" });
 
   // Input change handler: updates product state when typing in form
@@ -36,9 +42,8 @@ function App() {
     setProduct({ ...product, [e.target.name]: e.target.value });
     if (error[e.target.name as "title" | "description" | "imageURL" | "price"]) {
       setError({ ...error, [e.target.name]: "" });
-    } else {
-      return;
     }
+    return;
   };
 
   // Form submit handler: prevents page refresh and logs product data
@@ -53,10 +58,15 @@ function App() {
       setError(error);
       return; // Stop submission if there are validation errors
     }
+    setProducts((prev) => [{ ...product, colors: tampColor, id: uuid() }, ...prev]);
+    setProduct(defaultProductObj);
+    setTampColor([]);
+    setIsOpen(false);
+    setProduct(defaultProductObj); // reset form
   };
 
   // Render product list (cards)
-  const renderProductList = productList.map((product) => <ProductCart key={product.id} product={product} />);
+  const renderProductList = products.map((product) => <ProductCart key={product.id} product={product} />);
 
   // Render form inputs from data
   const renderformInputsList = formInputsList.map((input) => (
@@ -69,18 +79,19 @@ function App() {
     </div>
   ));
   // Render color options from data
-  const renderProductColors = colors.map((color) => <CircleColor key={color} color={color}
-    onClick={() => {
-      if (tampColor.includes(color)) {
-        setTampColor((prev) => prev.filter((c) => c !== color));
-        return;
-        
-      }
-        setTampColor((prev)=>[...prev,color]);
-    }
-    
-    
-    } />);
+  const renderProductColors = colors.map((color) => (
+    <CircleColor
+      key={color}
+      color={color}
+      onClick={() => {
+        if (tampColor.includes(color)) {
+          setTampColor((prev) => prev.filter((c) => c !== color));
+          return;
+        }
+        setTampColor((prev) => [...prev, color]);
+      }}
+    />
+  ));
 
   return (
     <main className="container mx-auto bg-blue-200">
@@ -95,13 +106,23 @@ function App() {
           {/* Dynamic form inputs */}
           {renderformInputsList}
           {/* Color selection */}
-          <div className="flex items-center space-x-1 flex-wrap">{tampColor.map(color =>(<span key={color} style={{backgroundColor: color}} className="p-1 mr-1 rounded-md text-white" >{ color} </span>))}</div>
+          <div className="flex items-center space-x-1 flex-wrap">
+            {tampColor.map((color) => (
+              <span key={color} style={{ backgroundColor: color }} className="p-1 mr-1 rounded-md text-white">
+                {color}{" "}
+              </span>
+            ))}
+          </div>
           <div className="flex items-center space-x-1 flex-wrap">{renderProductColors}</div>
 
           {/* Submit & Close buttons */}
           <div className="flex items-center justify-between space-x-3 mt-5">
             {/* Submit button: logs product data */}
-            <Button type="submit" className="bg-red-700 w-full p-2 rounded-lg text-white cursor-pointer ">
+            <Button
+              type="submit"
+
+              className="bg-red-700 w-full p-2 rounded-lg text-white cursor-pointer "
+            >
               Submit
             </Button>
 
