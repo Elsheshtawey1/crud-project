@@ -1,12 +1,13 @@
 import { useState } from "react";
 import ProductCart from "./components/ProductCart";
 import Model from "./components/Ui/Model";
-import { formInputsList, productList } from "./data";
+import { colors, formInputsList, productList } from "./data";
 import Button from "./components/Ui/Button";
 import Input from "./components/Ui/Input";
 import { IProduct } from "./interfaces";
 import { productValidation } from "./validation";
 import ErrorMassage from "./components/ErrorMassage";
+import CircleColor from "./components/CircleColor";
 
 function App() {
   // Default empty product object to reset form
@@ -66,6 +67,7 @@ function App() {
       <ErrorMassage msg={error[input.name as "title" | "description" | "imageURL" | "price"]} />
     </div>
   ));
+const renderProductColors = colors.map((color) => <CircleColor key={color} color={color} />);
 
   return (
     <main className="container mx-auto bg-blue-200">
@@ -79,6 +81,11 @@ function App() {
         <form onSubmit={submitHandler} className="space-y-3">
           {/* Dynamic form inputs */}
           {renderformInputsList}
+          {/* Color selection */}
+          <div className="flex items-center space-x-2">
+{renderProductColors}
+          </div>
+          
 
           {/* Submit & Close buttons */}
           <div className="flex items-center justify-between space-x-3 mt-5">
