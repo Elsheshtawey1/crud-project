@@ -25,7 +25,8 @@ function App() {
 
   // State to handle modal visibility
   const [isOpen, setIsOpen] = useState(false);
-
+  const [tampColor, setTampColor] = useState<string[]>([]);
+  console.log(tampColor);
   // State to handle product form data
   const [product, setProduct] = useState<IProduct>(defaultProductObj);
   const [error, setError] = useState({ title: "", description: "", imageURL: "", price: "" });
@@ -33,7 +34,7 @@ function App() {
   // Input change handler: updates product state when typing in form
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
-    if(error[e.target.name as "title" | "description" | "imageURL" | "price"]){
+    if (error[e.target.name as "title" | "description" | "imageURL" | "price"]) {
       setError({ ...error, [e.target.name]: "" });
     } else {
       return;
@@ -51,7 +52,7 @@ function App() {
       console.log("Validation Errors:", error);
       setError(error);
       return; // Stop submission if there are validation errors
-    } 
+    }
   };
 
   // Render product list (cards)
@@ -67,7 +68,19 @@ function App() {
       <ErrorMassage msg={error[input.name as "title" | "description" | "imageURL" | "price"]} />
     </div>
   ));
-const renderProductColors = colors.map((color) => <CircleColor key={color} color={color} />);
+  // Render color options from data
+  const renderProductColors = colors.map((color) => <CircleColor key={color} color={color}
+    onClick={() => {
+      if (tampColor.includes(color)) {
+        setTampColor((prev) => prev.filter((c) => c !== color));
+        return;
+        
+      }
+        setTampColor((prev)=>[...prev,color]);
+    }
+    
+    
+    } />);
 
   return (
     <main className="container mx-auto bg-blue-200">
@@ -82,10 +95,8 @@ const renderProductColors = colors.map((color) => <CircleColor key={color} color
           {/* Dynamic form inputs */}
           {renderformInputsList}
           {/* Color selection */}
-          <div className="flex items-center space-x-2">
-{renderProductColors}
-          </div>
-          
+          <div className="flex items-center space-x-1 flex-wrap">{tampColor.map(color =>(<span key={color} style={{backgroundColor: color}} className="p-1 mr-1 rounded-md text-white" >{ color} </span>))}</div>
+          <div className="flex items-center space-x-1 flex-wrap">{renderProductColors}</div>
 
           {/* Submit & Close buttons */}
           <div className="flex items-center justify-between space-x-3 mt-5">
