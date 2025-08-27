@@ -5,6 +5,8 @@ import { formInputsList, productList } from "./data";
 import Button from "./components/Ui/Button";
 import Input from "./components/Ui/Input";
 import { IProduct } from "./interfaces";
+import { productValidation } from "./validation";
+import ErrorMassage from "./components/ErrorMassage";
 
 function App() {
   // Default empty product object to reset form
@@ -25,16 +27,30 @@ function App() {
 
   // State to handle product form data
   const [product, setProduct] = useState<IProduct>(defaultProductObj);
+  const [error, setError] = useState({ title: "", description: "", imageURL: "", price: "" });
 
   // Input change handler: updates product state when typing in form
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
+    if(error[e.target.name as "title" | "description" | "imageURL" | "price"]){
+      setError({ ...error, [e.target.name]: "" });
+    } else {
+      return;
+    }
   };
 
   // Form submit handler: prevents page refresh and logs product data
   const submitHandler = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    console.log(product);
+    const error = productValidation({ title: product.title, description: product.description, imageURL: product.imageURL, price: product.price });
+
+    const hasErrors = Object.values(error).some((value) => value === "") && Object.values(error).every((value) => value == "");
+
+    if (!hasErrors) {
+      console.log("Validation Errors:", error);
+      setError(error);
+      return; // Stop submission if there are validation errors
+    } 
   };
 
   // Render product list (cards)
@@ -47,6 +63,7 @@ function App() {
         {input.label}
       </label>
       <Input type="text" id={input.id} name={input.name} value={product[input.name as "title" | "description" | "imageURL" | "price"]} onChange={onChangeHandler} />
+      <ErrorMassage msg={error[input.name as "title" | "description" | "imageURL" | "price"]} />
     </div>
   ));
 
