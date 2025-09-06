@@ -1,6 +1,6 @@
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import { Fragment } from "react";
+import { Fragment, memo } from "react";
 import { categories } from "../../data";
 import { ICategory } from "../../interfaces";
 
@@ -63,4 +63,4 @@ const Select = ({ selected, setSelected }: IProps) => {
   );
 };
 
-export default Select;
+export default memo(Select);

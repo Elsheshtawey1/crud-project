@@ -1,9 +1,8 @@
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useCallback } from "react";
 import { v4 as uuid } from "uuid";
 import { Toaster, toast } from "react-hot-toast";
 import { ProductNameTypes } from "./types";
-
-import ProductCart from "./components/ProductCart"; // ✅ هنا هو اللي عندك في المشروع
+import ProductCart from "./components/ProductCart";
 import Modal from "./components/Ui/Model";
 import { colors, formInputsList, productList, categories } from "./data";
 import Button from "./components/Ui/Button";
@@ -42,9 +41,11 @@ const App = () => {
   const closeModal = () => setIsOpen(false);
   const openModal = () => setIsOpen(true);
   const closeEditModal = () => setIsOpenEditModal(false);
-  const openEditModal = () => setIsOpenEditModal(true);
+  const openEditModal = useCallback(() => setIsOpenEditModal(true), []);
+  // const openEditModal =)  () => setIsOpenEditModal(true); 
+  const openConfirmModal = useCallback(() => setIsOpenConfirmModal(true), []);
+  // const openConfirmModal = () => setIsOpenConfirmModal(true);
   const closeConfirmModal = () => setIsOpenConfirmModal(false);
-  const openConfirmModal = () => setIsOpenConfirmModal(true);
 
   const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = event.target;

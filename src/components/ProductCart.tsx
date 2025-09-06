@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { IProduct } from "../interfaces";
 import { numberWithCommas, txtSlicer } from "../utils/Function";
 import CircleColor from "./CircleColor";
@@ -60,4 +61,5 @@ const ProductCard = ({ product, setProductToEdit, openEditModal, idx, setProduct
   );
 };
 
-export default ProductCard;
+export default memo(ProductCard);
+
