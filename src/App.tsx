@@ -42,36 +42,30 @@ const App = () => {
   const openModal = () => setIsOpen(true);
   const closeEditModal = () => setIsOpenEditModal(false);
   const openEditModal = useCallback(() => setIsOpenEditModal(true), []);
-  // const openEditModal =)  () => setIsOpenEditModal(true); 
+  // const openEditModal =)  () => setIsOpenEditModal(true);
   const openConfirmModal = useCallback(() => setIsOpenConfirmModal(true), []);
   // const openConfirmModal = () => setIsOpenConfirmModal(true);
   const closeConfirmModal = () => setIsOpenConfirmModal(false);
 
-  const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    const { value, name } = event.target;
+  const onChangeHandler = useCallback(
+    () => (event: ChangeEvent<HTMLInputElement>) => {
+      const { value, name } = event.target;
+      setProduct((prev) => ({ ...prev, [name]: value }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    },
+    []
+  );
 
-    setProduct({
-      ...product,
-      [name]: value,
-    });
-    setErrors({
-      ...errors,
-      [name]: "",
-    });
-  };
+  const onChangeEditHandler = useCallback(
+    () => (event: ChangeEvent<HTMLInputElement>) => {
+      const { value, name } = event.target;
 
-  const onChangeEditHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    const { value, name } = event.target;
+      setProductToEdit((prev) => ({ ...prev, [name]: value }));
 
-    setProductToEdit({
-      ...productToEdit,
-      [name]: value,
-    });
-    setErrors({
-      ...errors,
-      [name]: "",
-    });
-  };
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    },
+    []
+  );
 
   const onCancel = () => {
     setProduct(defaultProductObj);
